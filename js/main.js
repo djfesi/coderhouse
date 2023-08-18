@@ -1,6 +1,13 @@
+//Constantes ============================================================================================
+const PIZZA_SIZES = {
+  1: { size: 12, price: 2900 },
+  2: { size: 8, price: 2000 },
+  3: { size: 4, price: 1200 },
+};
+
 //Variables ============================================================================================
 let loadingProducts = true;
-let countProducts = 0;
+let order = [];
 
 //Funciones ============================================================================================
 function welcome() {
@@ -20,21 +27,13 @@ function addProducts() {
     "🍕 Ingrese el tamaño de la pizza a ordenar \n 1 - 12 Porciones \n 2 - 8 Porciones \n 3 - 4 Porciones"
   );
   let flavour;
-  switch (size) {
-    case "1": //12 Porciones
-      flavour = whatFlavor(12);
-      console.log(flavour);
-      break;
-    case "2": //8 Porciones
-      flavour = whatFlavor(8);
-      console.log(flavour);
-      break;
-    case "3": //4 Porciones
-      flavour = whatFlavor(4);
-      console.log(flavour);
-      break;
-    default:
-      return alert("❌ Valor Inválido");
+  if (PIZZA_SIZES.hasOwnProperty(size)) {
+    flavour = whatFlavor(PIZZA_SIZES[size].size);
+    order.push(
+      new Pizza(PIZZA_SIZES[size].size, flavour, PIZZA_SIZES[size].price)
+    );
+  } else {
+    return alert("❌ Valor Inválido");
   }
   message(flavour);
   addOtherProduct();
@@ -60,21 +59,35 @@ function addOtherProduct() {
 }
 
 function message(flavour) {
-  countProducts += 1; // Vamos acumulando la cantidad de productos agregados
   alert(`✅ Su pizza de ${flavour} ha sido cargada...`);
 }
 
 function finishBuying() {
   let description;
-  if (countProducts > 1){
-    description = 'pizzas';
-  }else{
-    description = 'pizza';
-  };
-  if(countProducts)
-  alert(`👨‍🍳 DON REMOLO ya esta preparando su pedido \n de ${countProducts} ${description}...`);
+  if (order.length > 1) {
+    description = "pizzas";
+  } else {
+    description = "pizza";
+  }
+  if (order.length) {
+    alert(
+      `👨‍🍳 DON REMOLO ya esta preparando su pedido \n de ${order.length} ${description}...`
+    );
+  }
+  // AQUI COLOCAR FUNCION CALCULAR COSTO
+  let numberOrder = Math.floor(Math.random() * 10000);
+  alert(`Su numero de orden es: ${numberOrder}, Total a abonar: $`);
   alert(`👋 Muchas Gracias por su compra...`);
 }
+
+//Funciones sin interacción con el usuario =============================================================
+function Pizza(size, flavor, price) {
+  this.size = size;
+  this.flavor = flavor;
+  this.price = price;
+}
+
+function calculateTotalPrice() {}
 // Fin de funciones
 
 // Iniciación =========================================================================================
