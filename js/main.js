@@ -74,9 +74,9 @@ function finishBuying() {
       `👨‍🍳 DON REMOLO ya esta preparando su pedido \n de ${order.length} ${description}...`
     );
   }
-  // AQUI COLOCAR FUNCION CALCULAR COSTO
+  let price = calculateTotalPrice();
   let numberOrder = Math.floor(Math.random() * 10000);
-  alert(`Su numero de orden es: ${numberOrder}, Total a abonar: $`);
+  alert(`Su numero de orden es: ${numberOrder}, Total a abonar: $ ${price.toFixed(2)}`);
   alert(`👋 Muchas Gracias por su compra...`);
 }
 
@@ -87,10 +87,16 @@ function Pizza(size, flavor, price) {
   this.price = price;
 }
 
-function calculateTotalPrice() {}
+function calculateTotalPrice() {
+  let total = 0;
+  for (var i = 0; i < order.length; i++) {
+    total += order[i].price;
+}
+return total
+}
 // Fin de funciones
 
-// Iniciación =========================================================================================
+// Iniciación =====================================================Í====================================
 setTimeout(() => {
   welcome();
 }, 2000);
