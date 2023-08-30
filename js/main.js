@@ -91,6 +91,6 @@ function calculateTotalPrice() {}
 // Fin de funciones
 
 // Iniciación =========================================================================================
-setTimeout(() => {
-  welcome();
-}, 2000);
+// setTimeout(() => {
+//   welcome();
+// }, 2000);
