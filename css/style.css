@@ -10,6 +10,16 @@ body {
   background-size: cover;
   background-repeat: no-repeat; 
   background-position: center;
+  background-attachment: fixed;
+}
+
+:root {
+  --dark-color-lighten: #f2f5ff;
+  --red-card: #a62121;
+  --yellow: #ffcc00;
+  --btn: #141414;
+  --btn-hover: #3a3a3a;
+  --text: #fbf7f7;
 }
 
 .center-container {
@@ -36,25 +46,16 @@ body {
   }
 }
 
-
-/* ///// */
-
 /*===== VARIABLES CSS =====*/
-:root {
-  --dark-color-lighten: #f2f5ff;
-  --red-card: #a62121;
-  --btn: #141414;
-  --btn-hover: #3a3a3a;
-  --text: #fbf7f7;
-}
 
-/*===== RESET =====*/
-*,
-::before,
-::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+
+#search{
+  height: 50px;
+  width: 30vw;
+  border-radius: 10px;
+  border: 3px solid var(--red-card);
+  background-color: #ffffff44;
+  color: white;
 }
 
 button {
@@ -78,14 +79,6 @@ img {
 }
 
 /*===== CARD =====*/
-.container {
-  /* height: 100%; */
-  /* width: 850px; */
-  /* margin: auto; */
-  /* display: flex; */
-  /* align-items: center; */
-  /* justify-content: space-evenly; */
-}
 .card {
   position: relative;
   padding: 1rem;
@@ -105,17 +98,25 @@ img {
 .product-image {
   height: 230px;
   width: 100%;
-  transform: translate(0, -1.5rem);
-  transition: transform 500ms ease-in-out;
   filter: drop-shadow(5px 10px 15px rgba(8, 9, 13, 0.4));
 }
+
 .product-info {
   text-align: center;
 }
 
 .card:hover .product-image {
-  transform: translate(-1.5rem, -7rem) rotate(-20deg);
+  animation: rotating 3s linear infinite;
 } 
+
+ @keyframes rotating {
+  0% { 
+    transform: rotate(0); 
+  }
+  100% { 
+    transform: rotate(360deg);
+  }
+ }
 
 .product-info h2 {
   font-size: 1.4rem;
@@ -126,16 +127,19 @@ img {
   font-size: 0.8rem;
   font-weight: 600;
 }
+
 .price {
   font-size: 1.2rem;
   font-weight: 500;
 }
+
 .btn {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
   margin-top: 0.8rem;
 }
+
 .buy-btn {
   background-color: var(--btn);
   padding: 0.6rem 3.5rem;
@@ -144,14 +148,16 @@ img {
   border-radius: 10px;
   transition: 300ms ease;
 }
+
 .buy-btn:hover {
   background-color: var(--btn-hover);
 }
+
 .fav {
   box-sizing: border-box;
-  background: #fff;
+  background: #ffffff3c;
   padding: 0.5rem 0.5rem;
-  border: 1px solid#000;
+  border: 1px solid#0000001a;
   display: grid;
   place-items: center;
 }
@@ -164,17 +170,9 @@ img {
 }
 
 .fav:hover .svg {
-  fill: #000;
+  fill: #ffcc00;
 }
 
-@media screen and (max-width: 800px) {
-  body {
-    height: auto;
-  }
-  /* .container {
-    padding: 2rem 0;
-    width: 100%;
-    flex-direction: column;
-    gap: 3rem;
-  } */
-}
+ .center-container, .container {
+  height: auto; 
+} 

@@ -7,6 +7,7 @@ const PIZZA_SIZES = {
 
 const PRODUCTS = [
   {
+    id: 0,
     name: "Pizza Cantimpalo",
     description:
       "Nuestra deliciosa pizza Cantimpalo está hecha con una base de salsa de tomate casera, queso mozzarella derretido y abundantes rodajas de chorizo Cantimpalo, ¡una explosión de sabor en cada bocado!",
@@ -14,6 +15,7 @@ const PRODUCTS = [
     img: "https://th.bing.com/th/id/R.fb924adfcac2d9873093f80618bb137b?rik=MqV9PfXgBoPm5w&riu=http%3a%2f%2fpapaallenspizza.com%2fdowntown%2fimages%2fpepperoni.png&ehk=4%2bn5e2Z7XXIlHYGlmA42b15HqPlvRyrfuPfwzsLVY9s%3d&risl=&pid=ImgRaw&r=0",
   },
   {
+    id: 1,
     name: "Pizza Margherita",
     description:
       "Nuestra clásica Pizza Margherita es una obra maestra simple pero deliciosa. Con tomates frescos, mozzarella de alta calidad y hojas de albahaca fragantes, te transportará a la Italia auténtica en cada bocado.",
@@ -21,6 +23,7 @@ const PRODUCTS = [
     img: "https://www.hearthandfirepizza.com/cdn/shop/products/product-beauty-the-margherita.png?v=1656423819",
   },
   {
+    id: 2,
     name: "Pizza BBQ",
     description:
       "Si eres amante de los sabores ahumados y el toque agridulce, nuestra Pizza BBQ es perfecta para ti. Con salsa barbacoa, pollo a la parrilla, cebolla roja y queso cheddar, te llevará a una experiencia única.",
@@ -28,6 +31,7 @@ const PRODUCTS = [
     img: "https://images.newyorkpizza.nl/Products/Original/BBQ_Double_Bacon-8181.png",
   },
   {
+    id: 3,
     name: "Pizza Vegetariana",
     description:
       "Nuestra Pizza Vegetariana es un festín de sabores frescos. Con una mezcla de pimientos, champiñones, aceitunas, cebolla y espinacas, es una opción saludable y deliciosa para los amantes de las verduras.",
@@ -35,6 +39,7 @@ const PRODUCTS = [
     img: "https://livornos.com/wp-content/uploads/2020/08/h2_pizza-1.png",
   },
   {
+    id: 4,
     name: "Pizza Hawaiana",
     description:
       "La Pizza Hawaiana es la combinación perfecta de dulce y salado. Con trozos jugosos de piña, jamón, salsa de tomate y queso fundido, te transportará a una isla tropical en cada bocado.",
@@ -42,6 +47,7 @@ const PRODUCTS = [
     img: "https://www.pizzapatron.com/wp-content/themes/patron/dist/img/hawaianawebP.webp",
   },
   {
+    id: 5,
     name: "Pizza Pepperoni",
     description:
       "Nuestra Pizza Pepperoni es un clásico atemporal. Con generosas capas de pepperoni y queso derretido, es la elección perfecta para los amantes de los sabores intensos y picantes.",
@@ -49,6 +55,7 @@ const PRODUCTS = [
     img: "https://assets.caseys.com/m/429f598e526c218c/400x400-8104_base.PNG",
   },
   {
+    id: 6,
     name: "Pizza de Pollo BBQ",
     description:
       "¿Quieres un toque de barbacoa en tu pizza? Prueba nuestra Pizza de Pollo BBQ, con pollo a la parrilla, cebolla morada, maíz dulce y salsa de barbacoa, es una fiesta de sabores en cada rebanada.",
@@ -187,29 +194,61 @@ function calculateTotalPrice() {
 
 const productsHTML = document.getElementById("cardProducts");
 
-for (const product of PRODUCTS) {
-  let card = document.createElement("div");
-  card.classList.add("col-sm-12");
-  card.classList.add("col-md-6");
-  card.classList.add("col-lg-4");
-  card.classList.add("p-4");
-  card.innerHTML = `<section class="card">
-  <div class="product-image">
-    <img src=${product.img} draggable="false" />         
-  </div>
-  <div class="product-info">
-    <h2>${product.name}</h2>
-    <p>${product.description}</p>
-    <div class="price">$999</div>
-  </div>
-  <div class="btn">
-    <button class="buy-btn">Agregar al carrito</button>
-    <button class="fav">
-      <svg class="svg" id="i-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
-        <path d="M16 2 L20 12 30 12 22 19 25 30 16 23 7 30 10 19 2 12 12 12 Z" />
-      </svg>
-    </button>
-  </div>
-  </section>`;
-  productsHTML.appendChild(card);
+function createGrid(PRODUCTS) {
+  for (const product of PRODUCTS) {
+    let card = document.createElement("div");
+    card.classList.add("col-sm-12");
+    card.classList.add("col-md-6");
+    card.classList.add("col-lg-4");
+    card.classList.add("p-4");
+    card.innerHTML = `<section class="card">
+    <div class="product-image">
+      <img src=${product.img} draggable="false" />         
+    </div>
+    <div class="product-info">
+      <h2>${product.name}</h2>
+      <p>${product.description}</p>
+      <div class="price">$999</div>
+    </div>
+    <div class="btn">
+      <button class="buy-btn" id="${product.id}">Agregar al carrito</button>
+      <button class="fav">
+        <svg class="svg" id="i-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+          <path d="M16 2 L20 12 30 12 22 19 25 30 16 23 7 30 10 19 2 12 12 12 Z" />
+        </svg>
+      </button>
+    </div>
+    </section>`;
+    productsHTML.appendChild(card);
+  }
 }
+
+createGrid(PRODUCTS);
+
+// Filtro de busqueda
+const inputSearch = document.querySelector("#search");
+inputSearch.addEventListener("keyup", () => {
+  const searchText = inputSearch.value.toLowerCase();
+  const filteredProducts = PRODUCTS.filter((product) => {
+    const productName = product.name.toLowerCase();
+    return productName.includes(searchText);
+  });
+  productsHTML.innerHTML = "";
+  createGrid(filteredProducts);
+});
+
+let cart = [];
+if (sessionStorage.getItem("cartItems")) {
+  cart = JSON.parse(sessionStorage.getItem("cartItems"));
+}
+const addButtons = document.querySelectorAll(".buy-btn");
+addButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const selectedProduct = PRODUCTS.find(
+      (product) => product.id === Number(button.id)
+    );
+    cart.push(selectedProduct);
+    sessionStorage.setItem("cartItems", JSON.stringify(cart));
+  });
+});
+
