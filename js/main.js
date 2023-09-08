@@ -64,136 +64,23 @@ const PRODUCTS = [
   },
 ];
 
-const DAY = new Date();
-const DAYS_OF_THE_WEEK = [
-  "Domingo",
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-];
+// Elementos capturados
+const productsHTML = document.getElementById("cardProducts");
+const inputSearch = document.querySelector("#search");
+const clearCartButton = document.querySelector(".btn-clear");
+const processOrderButton = document.querySelector(".btn-process");
+const purchaseDetails = document.getElementById("purchaseDetails");
 
 //Variables ============================================================================================
 let loadingProducts = true;
+let totalPrice = 0;
+let totalQuantity = 0;
 let order = [];
+let cart = [];
 
 //Funciones ============================================================================================
-function welcome() {
-  const CURRENT_TIME = DAY.getHours();
-  const DATE_TODAY = DAYS_OF_THE_WEEK[DAY.getDay()];
-  alert("👨‍🍳 Bienvenido a Don Remolo");
-  alert(`Solo por hoy ${DATE_TODAY}, pizzas de 12 porciones 10% OFF`);
-  let TimeOfTheDay;
-  if (CURRENT_TIME <= 15) {
-    TimeOfTheDay = "almuerzo";
-  } else {
-    TimeOfTheDay = "cena";
-  }
-  alert(`Esta listo para pedir su ${TimeOfTheDay}`);
-  startOrder();
-}
 
-function startOrder() {
-  do {
-    addProducts();
-  } while (loadingProducts === true);
-}
-
-function addProducts() {
-  let size = prompt(
-    "🍕 Ingrese el tamaño de la pizza a ordenar \n 1 - 12 Porciones \n 2 - 8 Porciones \n 3 - 4 Porciones"
-  );
-  let flavour;
-  if (PIZZA_SIZES.hasOwnProperty(size)) {
-    flavour = whatFlavor(PIZZA_SIZES[size].size);
-    order.push(
-      new Pizza(PIZZA_SIZES[size].size, flavour, PIZZA_SIZES[size].price)
-    );
-  } else {
-    return alert("❌ Valor Inválido");
-  }
-  message(flavour);
-  addOtherProduct();
-}
-
-function whatFlavor(size) {
-  let flavor = prompt(`🍕 De que sabor quiere su pizza de ${size} porciones`);
-  return flavor;
-}
-
-function addOtherProduct() {
-  let isFinished = prompt(
-    "Desea agregar otro producto  \n  0 - NO \n  1 - SI  "
-  );
-  if (isFinished === "1") {
-  } else if (isFinished === "0") {
-    finishBuying(); //Finaliza el pedido
-    loadingProducts = false;
-  } else {
-    alert("❌ Valor Inválido");
-    addOtherProduct();
-  }
-}
-
-function message(flavour) {
-  alert(`✅ Su pizza de ${flavour} ha sido cargada...`);
-}
-
-function finishBuying() {
-  let description;
-  if (order.length > 1) {
-    description = "pizzas";
-  } else {
-    description = "pizza";
-  }
-  if (order.length) {
-    alert(
-      `👨‍🍳 DON REMOLO ya esta preparando su pedido \n de ${order.length} ${description}...`
-    );
-  }
-  if (order.find((pizza) => pizza.size === 12)) {
-    order.forEach((pizza) => {
-      if (pizza.size === 12) {
-        const descuento = pizza.price * 0.1;
-        pizza.price -= descuento;
-      }
-    });
-  }
-  let price = calculateTotalPrice();
-  let numberOrder = Math.floor(Math.random() * 10000);
-  alert(
-    `Su numero de orden es: ${numberOrder}, Total a abonar: $ ${price.toFixed(
-      2
-    )}`
-  );
-  alert(`👋 Muchas Gracias por su compra...`);
-}
-
-//Funciones sin interacción con el usuario =============================================================
-function Pizza(size, flavor, price) {
-  this.size = size;
-  this.flavor = flavor;
-  this.price = price;
-}
-
-function calculateTotalPrice() {
-  let total = 0;
-  for (var i = 0; i < order.length; i++) {
-    total += order[i].price;
-  }
-  return total;
-}
-// Fin de funciones
-
-// Iniciación =========================================================================================
-// setTimeout(() => {
-//   welcome();
-// }, 2000);
-
-const productsHTML = document.getElementById("cardProducts");
-
+//Creacion de Cards de Productos
 function createGrid(PRODUCTS) {
   for (const product of PRODUCTS) {
     let card = document.createElement("div");
@@ -206,27 +93,158 @@ function createGrid(PRODUCTS) {
       <img src=${product.img} draggable="false" />         
     </div>
     <div class="product-info">
-      <h2>${product.name}</h2>
+      <h2>🍕 ${product.name}</h2>
       <p>${product.description}</p>
-      <div class="price">$999</div>
+      <div class="price" id="price-${product.id}">$${PIZZA_SIZES[1].price}</div>
+      <label for="portion-select">Porción:</label>
+      <select id="portion-select-${product.id}">
+        <option value="1">12 porciones</option>
+        <option value="2">8 porciones</option>
+        <option value="3">4 porciones</option>
+      </select>
     </div>
     <div class="btn">
-      <button class="buy-btn" id="${product.id}">Agregar al carrito</button>
-      <button class="fav">
-        <svg class="svg" id="i-star" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+      <button class="buy-btn" id="${product.id}">Agregar al carrito 👨‍🍳</button>
+      <button class="fav" id="fav-${product.id}">
+        <svg class="svg" id="i-star-${product.id}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
           <path d="M16 2 L20 12 30 12 22 19 25 30 16 23 7 30 10 19 2 12 12 12 Z" />
         </svg>
       </button>
     </div>
     </section>`;
+
     productsHTML.appendChild(card);
+    const favButton = document.getElementById(`fav-${product.id}`);
+
+    favButton.addEventListener("click", () => toggleFavorite(product.id));
+
+    const portionSelect = document.getElementById(
+      `portion-select-${product.id}`
+    );
+
+    portionSelect.addEventListener("change", () => {
+      const selectedSize = portionSelect.value;
+      const priceElement = document.getElementById(`price-${product.id}`);
+      priceElement.textContent = `$${PIZZA_SIZES[selectedSize].price}`;
+    });
   }
 }
 
-createGrid(PRODUCTS);
+//Actualiza contador de productos
+function updateCounter() {
+  const cartQuantity = document.getElementById("cart-quantity");
 
+  if (sessionStorage.getItem("cartItems")) {
+    const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+    totalQuantity = cartItems.length;
+  } else {
+    totalQuantity = 0;
+  }
+
+  cartQuantity.textContent = totalQuantity.toString();
+  calculateTotal();
+}
+
+//Agregar a favoritos
+function toggleFavorite(productId) {
+  const svgIcon = document.getElementById(`i-star-${productId}`);
+  const isFavorite = localStorage.getItem(`favorite-${productId}`);
+
+  if (isFavorite === "true") {
+    localStorage.removeItem(`favorite-${productId}`);
+    svgIcon.style.fill = "#fff";
+  } else {
+    localStorage.setItem(`favorite-${productId}`, "true");
+    svgIcon.style.fill = "#ffcc00";
+  }
+}
+
+//Renderiza si el producto esta en fav o no
+function applyFavoriteStateOnLoad() {
+  PRODUCTS.forEach((product) => {
+    const productId = product.id;
+    const svgIcon = document.getElementById(`i-star-${productId}`);
+    const isFavorite = localStorage.getItem(`favorite-${productId}`);
+    if (isFavorite === "true") {
+      svgIcon.style.fill = "#ffcc00";
+    } else {
+      svgIcon.style.fill = "#fff";
+    }
+  });
+}
+
+//Tabla con detalle del pedido
+function renderCartTable() {
+  const cartTableBody = document.querySelector("#cart-table tbody");
+  cartTableBody.innerHTML = "";
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+
+  if (cartItems && cartItems.length > 0) {
+    cartItems.forEach((item) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${item.name}</td>
+        <td>${item.size} porciones</td>
+        <td>$${item.price.toFixed(2)}</td>
+      `;
+      cartTableBody.appendChild(row);
+    });
+  }
+}
+
+//Calcular costo
+function calculateTotal() {
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  totalPrice = 0
+  if (cartItems && cartItems.length > 0) {
+    cartItems.forEach((item) => {
+      totalPrice += item.price;
+    });
+  }
+  const totalPayElement = document.getElementById("totalPay");
+  totalPayElement.textContent = `$${totalPrice.toFixed(2)}`;
+}
+
+//Limpiar carrito
+function clearCart() {
+  if (sessionStorage.getItem("cartItems")) {
+    sessionStorage.removeItem("cartItems");
+    totalPrice = 0;
+  }
+  updateCounter();
+  renderCartTable();
+}
+
+//Procesar compra
+function processOrder() {
+  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  if (cartItems) {
+    purchaseDetails.classList.remove("bg-detail-false");
+    purchaseDetails.classList.add("bg-detail");
+    let numberOrder = Math.floor(Math.random() * 10000);
+    purchaseDetails.textContent = `Su pedido ya esta en curso, el total a abonar es $${totalPrice.toFixed(
+      2
+    )}. Muchas Gracias por su compra...👋. Su n° de pedido es: ${numberOrder}.`;
+  } else {
+    purchaseDetails.classList.remove("bg-detail");
+    purchaseDetails.classList.add("bg-detail-false");
+    purchaseDetails.textContent = `❌ ¡No tienes productos cargados aún!`;
+  }
+  clearCart();
+}
+
+//Se llama a las funciones
+createGrid(PRODUCTS);
+if (sessionStorage.getItem("cartItems")) {
+  cart = JSON.parse(sessionStorage.getItem("cartItems"));
+}
+updateCounter();
+renderCartTable();
+applyFavoriteStateOnLoad();
+//Fin
+
+//Eventos ============================================================================================
 // Filtro de busqueda
-const inputSearch = document.querySelector("#search");
 inputSearch.addEventListener("keyup", () => {
   const searchText = inputSearch.value.toLowerCase();
   const filteredProducts = PRODUCTS.filter((product) => {
@@ -235,20 +253,42 @@ inputSearch.addEventListener("keyup", () => {
   });
   productsHTML.innerHTML = "";
   createGrid(filteredProducts);
+  applyFavoriteStateOnLoad();
 });
 
-let cart = [];
-if (sessionStorage.getItem("cartItems")) {
-  cart = JSON.parse(sessionStorage.getItem("cartItems"));
-}
+//Boton agregar producto al carrito
 const addButtons = document.querySelectorAll(".buy-btn");
 addButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const selectedProduct = PRODUCTS.find(
       (product) => product.id === Number(button.id)
     );
+    const portionSelect = document.getElementById(
+      `portion-select-${button.id}`
+    );
+    const selectedSize = portionSelect.value;
+    selectedProduct.size = PIZZA_SIZES[selectedSize].size;
+    selectedProduct.price = PIZZA_SIZES[selectedSize].price;
+    if (sessionStorage.getItem("cartItems")) {
+      cart = JSON.parse(sessionStorage.getItem("cartItems"));
+    }
     cart.push(selectedProduct);
     sessionStorage.setItem("cartItems", JSON.stringify(cart));
+
+    if (purchaseDetails.textContent) {
+      purchaseDetails.classList.remove("bg-detail");
+      purchaseDetails.classList.remove("bg-detail-false");
+      purchaseDetails.textContent = "";
+    }
+
+    cart = [];
+    updateCounter();
+    renderCartTable();
   });
 });
 
+//Limpiar carrito
+clearCartButton.addEventListener("click", clearCart);
+
+//Finalizar compra
+processOrderButton.addEventListener("click", processOrder);
