@@ -136,12 +136,14 @@ function updateCounter() {
 
   if (sessionStorage.getItem("cartItems")) {
     const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
-    totalQuantity = cartItems.length;
+    const totalQuantity = cartItems.reduce((total, product) => {
+      return total + product.amount;
+    }, 0);
+    cartQuantity.textContent = totalQuantity.toString();
   } else {
-    totalQuantity = 0;
+    cartQuantity.textContent = "0";
   }
 
-  cartQuantity.textContent = totalQuantity.toString();
   calculateTotal();
 }
 
@@ -183,6 +185,7 @@ function renderCartTable() {
     cartItems.forEach((item) => {
       const row = document.createElement("tr");
       row.innerHTML = `
+        <td>${item.amount}</td>
         <td>${item.name}</td>
         <td>${item.size} porciones</td>
         <td>$${item.price.toFixed(2)}</td>
@@ -195,10 +198,10 @@ function renderCartTable() {
 //Calcular costo
 function calculateTotal() {
   const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
-  totalPrice = 0
+  totalPrice = 0;
   if (cartItems && cartItems.length > 0) {
     cartItems.forEach((item) => {
-      totalPrice += item.price;
+      totalPrice += item.price * item.amount;
     });
   }
   const totalPayElement = document.getElementById("totalPay");
@@ -211,6 +214,50 @@ function clearCart() {
     sessionStorage.removeItem("cartItems");
     totalPrice = 0;
   }
+  updateCounter();
+  renderCartTable();
+}
+
+//Boton agregar producto al carrito
+function addToCart(button) {
+  const selectedProduct = PRODUCTS.find(
+    (product) => product.id === Number(button.id)
+  );
+
+  const portionSelect = document.getElementById(`portion-select-${button.id}`);
+  const selectedSize = portionSelect.value;
+  selectedProduct.size = PIZZA_SIZES[selectedSize].size;
+  selectedProduct.price = PIZZA_SIZES[selectedSize].price;
+
+  let cart = [];
+  if (sessionStorage.getItem("cartItems")) {
+    cart = JSON.parse(sessionStorage.getItem("cartItems"));
+  }
+
+  const existingProductIndex = cart.findIndex((product) => {
+    return (
+      product.name === selectedProduct.name &&
+      product.size === selectedProduct.size
+    );
+  });
+
+  if (existingProductIndex !== -1) {
+    cart[existingProductIndex].amount += 1;
+  } else {
+    selectedProduct.amount = 1;
+    delete selectedProduct.img;
+    delete selectedProduct.description;
+    cart.push(selectedProduct);
+  }
+
+  sessionStorage.setItem("cartItems", JSON.stringify(cart));
+
+  if (purchaseDetails.textContent) {
+    purchaseDetails.classList.remove("bg-detail");
+    purchaseDetails.classList.remove("bg-detail-false");
+    purchaseDetails.textContent = "";
+  }
+
   updateCounter();
   renderCartTable();
 }
@@ -244,6 +291,14 @@ applyFavoriteStateOnLoad();
 //Fin
 
 //Eventos ============================================================================================
+// Agregar event listener a los botones de compra
+let addButtons = document.querySelectorAll(".buy-btn");
+addButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    addToCart(button);
+  });
+});
+
 // Filtro de busqueda
 inputSearch.addEventListener("keyup", () => {
   const searchText = inputSearch.value.toLowerCase();
@@ -253,38 +308,13 @@ inputSearch.addEventListener("keyup", () => {
   });
   productsHTML.innerHTML = "";
   createGrid(filteredProducts);
-  applyFavoriteStateOnLoad();
-});
-
-//Boton agregar producto al carrito
-const addButtons = document.querySelectorAll(".buy-btn");
-addButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    const selectedProduct = PRODUCTS.find(
-      (product) => product.id === Number(button.id)
-    );
-    const portionSelect = document.getElementById(
-      `portion-select-${button.id}`
-    );
-    const selectedSize = portionSelect.value;
-    selectedProduct.size = PIZZA_SIZES[selectedSize].size;
-    selectedProduct.price = PIZZA_SIZES[selectedSize].price;
-    if (sessionStorage.getItem("cartItems")) {
-      cart = JSON.parse(sessionStorage.getItem("cartItems"));
-    }
-    cart.push(selectedProduct);
-    sessionStorage.setItem("cartItems", JSON.stringify(cart));
-
-    if (purchaseDetails.textContent) {
-      purchaseDetails.classList.remove("bg-detail");
-      purchaseDetails.classList.remove("bg-detail-false");
-      purchaseDetails.textContent = "";
-    }
-
-    cart = [];
-    updateCounter();
-    renderCartTable();
+  btn = document.querySelectorAll(".buy-btn");
+  btn.forEach((button) => {
+    button.addEventListener("click", () => {
+      addToCart(button);
+    });
   });
+  applyFavoriteStateOnLoad();
 });
 
 //Limpiar carrito
