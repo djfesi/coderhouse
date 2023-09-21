@@ -74,8 +74,8 @@ function createGrid(PRODUCTS) {
 function updateCounter() {
   const cartQuantity = document.getElementById("cart-quantity");
 
-  if (sessionStorage.getItem("cartItems")) {
-    const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  if (localStorage.getItem("cartItems")) {
+    const cartItems = JSON.parse(localStorage.getItem("cartItems"));
     const totalQuantity = cartItems.reduce((total, product) => {
       return total + product.amount;
     }, 0);
@@ -117,7 +117,7 @@ function applyFavoriteStateOnLoad() {
 function renderCartTable() {
   const cartTableBody = document.querySelector("#cart-table tbody");
   cartTableBody.innerHTML = "";
-  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
 
   if (cartItems && cartItems.length > 0) {
     cartItems.forEach((item) => {
@@ -135,7 +135,7 @@ function renderCartTable() {
 
 //Calcular costo
 function calculateTotal() {
-  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
   totalPrice = 0;
   if (cartItems && cartItems.length > 0) {
     cartItems.forEach((item) => {
@@ -148,8 +148,8 @@ function calculateTotal() {
 
 //Limpiar carrito
 function clearCart() {
-  if (sessionStorage.getItem("cartItems")) {
-    sessionStorage.removeItem("cartItems");
+  if (localStorage.getItem("cartItems")) {
+    localStorage.removeItem("cartItems");
     totalPrice = 0;
   }
   updateCounter();
@@ -168,8 +168,8 @@ function addToCart(button) {
   selectedProduct.price = PIZZA_SIZES[selectedSize].price;
 
   let cart = [];
-  if (sessionStorage.getItem("cartItems")) {
-    cart = JSON.parse(sessionStorage.getItem("cartItems"));
+  if (localStorage.getItem("cartItems")) {
+    cart = JSON.parse(localStorage.getItem("cartItems"));
   }
 
   const existingProductIndex = cart.findIndex((product) => {
@@ -186,7 +186,7 @@ function addToCart(button) {
     cart.push(selectedProduct);
   }
 
-  sessionStorage.setItem("cartItems", JSON.stringify(cart));
+  localStorage.setItem("cartItems", JSON.stringify(cart));
 
   Toastify({
     text: `${selectedProduct.name} agregada`,
@@ -208,7 +208,7 @@ function addToCart(button) {
 
 //Procesar compra
 function processOrder() {
-  const cartItems = JSON.parse(sessionStorage.getItem("cartItems"));
+  const cartItems = JSON.parse(localStorage.getItem("cartItems"));
   if (cartItems) {
     purchaseDetails.classList.remove("bg-detail-false");
     purchaseDetails.classList.add("bg-detail");
@@ -230,8 +230,8 @@ fetch("./data/data.json")
   .then((data) => {
     PRODUCTS = data;
     createGrid(PRODUCTS);
-    if (sessionStorage.getItem("cartItems")) {
-      cart = JSON.parse(sessionStorage.getItem("cartItems"));
+    if (localStorage.getItem("cartItems")) {
+      cart = JSON.parse(localStorage.getItem("cartItems"));
     }
     updateCounter();
     renderCartTable();
@@ -275,7 +275,7 @@ inputSearch.addEventListener("keyup", () => {
 
 //Limpiar carrito
 clearCartButton.addEventListener("click", function () {
-  if (!sessionStorage.getItem("cartItems")) {
+  if (!localStorage.getItem("cartItems")) {
     Toastify({
       text: "No tienes productos cargados.",
       duration: 1200,
